@@ -6,7 +6,7 @@ on:
     - cron: '0 9 * * 1-5'     # 周一到周五，UTC 9:00 = 北京时间 17:00
 # 并发控制：同一时间只运行一个任务
 concurrency:
-  group: sync_latest_from_upstream:
+  group: sync_latest_from_upstream
   cancel-in-progress: false
 jobs:
   sync_latest_from_upstream:
