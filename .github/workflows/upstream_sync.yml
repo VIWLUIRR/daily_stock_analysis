@@ -1,0 +1,32 @@
+name: 上游代码同步
+
+on:
+  # 定时触发 - 每天北京时间 17:00 (UTC 09:00)
+  schedule:
+    - cron: '0 9 * * 1-5'     # 周一到周五，UTC 9:00 = 北京时间 17:00
+# 并发控制：同一时间只运行一个任务
+concurrency:
+  group: sync_latest_from_upstream:
+  cancel-in-progress: false
+jobs:
+  sync_latest_from_upstream:
+    runs-on: ubuntu-latest
+    name: Sync latest commits from upstream repo
+    # 添加超时限制，防止任务卡死
+    timeout-minutes: 30
+    
+    steps:
+    - name: Checkout target repo
+      uses: actions/checkout@v3
+      with:
+        # optional: set the branch to checkout,
+        # sync action checks out your 'target_sync_branch' anyway
+        ref:  main
+    - name: Sync upstream changes
+      id: sync
+      uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
+      with:
+        target_sync_branch: main
+        target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+        upstream_sync_branch: main
+        upstream_sync_repo: ZhuLinsen/daily_stock_analysis
